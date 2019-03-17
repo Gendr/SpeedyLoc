@@ -1,0 +1,55 @@
+﻿## Interface: 80100
+## Title: SpeedyLoc
+## Notes: View current player coords, direction and movement speed.
+## Notes-deDE: View current player coords, direction and movement speed.
+## Notes-esES: View current player coords, direction and movement speed.
+## Notes-esMX: View current player coords, direction and movement speed.
+## Notes-frFR: View current player coords, direction and movement speed.
+## Notes-itIT: View current player coords, direction and movement speed.
+## Notes-koKR: View current player coords, direction and movement speed.
+## Notes-ptBR: View current player coords, direction and movement speed.
+## Notes-ruRU: View current player coords, direction and movement speed.
+## Notes-zhCN: View current player coords, direction and movement speed.
+## Notes-zhTW: View current player coords, direction and movement speed.
+## Author: Gendr
+## Version: 1.0
+
+## X-Category: Miscellaneous
+## X-Website: https://github.com/Gendr/SpeedyLoc
+## X-Curse-Project-ID: 317554
+## X-WoWI-ID: 
+
+## SavedVariables: SpeedyLocDB
+## OptionalDeps: Ace3, LibSharedMedia-3.0, AceGUI-3.0-SharedMediaWidgets
+
+#@no-lib-strip@
+Libs\LibStub\LibStub.lua
+Libs\CallbackHandler-1.0\CallbackHandler-1.0.xml
+
+Libs\AceAddon-3.0\AceAddon-3.0.xml
+Libs\AceDB-3.0\AceDB-3.0.xml
+Libs\AceDBOptions-3.0\AceDBOptions-3.0.xml
+Libs\AceLocale-3.0\AceLocale-3.0.xml
+
+Libs\AceGUI-3.0\AceGUI-3.0.xml
+Libs\AceConsole-3.0\AceConsole-3.0.xml
+Libs\AceConfig-3.0\AceConfig-3.0.xml
+
+Libs\AceGUI-3.0-SharedMediaWidgets\widget.xml
+Libs\LibSharedMedia-3.0\lib.xml
+#@end-no-lib-strip@
+
+Locales\enUS.lua
+Locales\deDE.lua
+Locales\frFR.lua
+Locales\esES.lua
+Locales\esMX.lua
+Locales\zhTW.lua
+Locales\zhCN.lua
+Locales\koKR.lua
+Locales\ruRU.lua
+Locales\ptBR.lua
+Locales\itIT.lua
+
+SpeedyLoc.lua
+Config.lua
