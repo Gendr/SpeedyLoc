@@ -340,6 +340,14 @@ local function getOptions()
 										SpeedyLoc:UpdateLayout()
 									end,
 								},
+								hideZero = {
+									order = 2, type = "toggle",
+									name = L["Hide When Zero"],
+									desc = L["Hides coordinates when both are zero."],
+									set = function(info, v)
+										SpeedyLoc.db.profile.coords.hideZero = v
+									end,
+								},
 							},
 						},
 					},
@@ -566,7 +574,7 @@ function SpeedyLoc:SetupOptions()
 
 	LibStub("AceConfigRegistry-3.0"):RegisterOptionsTable("SpeedyLoc", getOptions)
 
-	local function OpenOptions()
+	function OpenOptions()
 		SpeedyLoc.prtD("Open Options")
 
 		if (not InCombatLockdown()) then

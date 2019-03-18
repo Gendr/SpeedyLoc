@@ -59,6 +59,8 @@ L["Coords Y Offset"] = true
 L["Set the vertical position of the coords text on the layout frame."] = true
 L["Coordinates Accuracy"] = true
 L["Control the accuracy of the coordinates."] = true
+L["Hide When Zero"] = true
+L["Hides coordinates when both are zero."] = true
 
 L["Direction"] = true
 L["Bar Direction Font"] = true
@@ -101,9 +103,6 @@ L["Background Color"] = true
 L["Set the background color of the layout frame."] = true
 L["Background Texture"] = true
 L["Set the background texture of the layout frame."] = true
-
-
-
 
 L["Border"] = true
 L["Border Color"] = true

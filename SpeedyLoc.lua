@@ -1,4 +1,4 @@
---[[	Speedy	]]--
+--[[	SpeedyLoc	]]--
 
 local deg = math.deg
 local format = string.format
@@ -23,12 +23,11 @@ local SpeedyLoc = LibStub("AceAddon-3.0"):NewAddon("SpeedyLoc")
 local L = LibStub("AceLocale-3.0"):GetLocale("SpeedyLoc")
 local Media = LibStub("LibSharedMedia-3.0")
 
-SpeedyLoc.VERSION = 1.1
+SpeedyLoc.VERSION = 1.2
 SpeedyLoc.DebugOn = false
 SpeedyLoc.Prefix = "|cffa0a0a0Speedy:"
 
-local facing, facingShort, facingText
-local playerFacingRad, playerFacingDeg
+local facing, facingShort
 local speed
 local texttemplate, text = "|cffa0a0a0%%.%df.%%.%df", "|cffa0a0a0%%.%df.%%.%df"
 
@@ -46,23 +45,12 @@ local defaults = {
 		width = 130,
 		height = 30,
 		scale = 1,
-
 		backgroundColor = {r = 0, g = 0, b = 0, a = 1},
 		backgroundTexture = "Blizzard Tooltip",
 		borderColor = {r = 1, g = 1, b = 1, a = 1},
 		borderTexture = "Blizzard Tooltip",
 		borderSize = 15,
 		borderInset = 3,
-
-		speed = {
-			font = "Friz Quadrata TT",
-			fontSize = 12,
-			fontOutline = "NONE",
-			fontShadow = false,
-			anchor = "RIGHT",
-			posx = -7,
-			posy = 0,
-		},
 		coords = {
 			font = "Friz Quadrata TT",
 			fontSize = 12,
@@ -72,6 +60,7 @@ local defaults = {
 			posx = 7,
 			posy = 0,
 			accuracy = 0,
+			hideZero = false,
 		},
 		direction = {
 			font = "Friz Quadrata TT",
@@ -80,6 +69,15 @@ local defaults = {
 			fontShadow = false,
 			anchor = "CENTER",
 			posx = 0,
+			posy = 0,
+		},
+		speed = {
+			font = "Friz Quadrata TT",
+			fontSize = 12,
+			fontOutline = "NONE",
+			fontShadow = false,
+			anchor = "RIGHT",
+			posx = -7,
 			posy = 0,
 		},
 	}
@@ -143,7 +141,19 @@ function SpeedyLoc:Updater()
 
 	if (not SpeedyLocDB.version) then
 		SpeedyLocDB.version = SpeedyLoc.VERSION
-		SpeedyLoc.prt(L["Welcome! Type /speedyloc to configure."])
+		StaticPopupDialogs["SPEEDYLOC_WELCOME"] = {
+			text = L["Welcome! Type /speedyloc to configure."],
+			button1 = "Okay",
+			button2 = "Open Options",
+			OnCancel = function()
+				OpenOptions()
+			end,
+			timeout = 0,
+			whileDead = true,
+			hideOnEscape = true,
+			preferredIndex = 3,
+		}
+		StaticPopup_Show("SPEEDYLOC_WELCOME")
 	elseif SpeedyLocDB.version ~= SpeedyLoc.VERSION then
 		SpeedyLocDB.version = SpeedyLoc.VERSION
 		SpeedyLoc.prt(format("|cff00ff00%s", L["Updated to latest version"]))
@@ -154,6 +164,7 @@ end
 
 function GetPlayerPosition()
 	SpeedyLoc.prtD("GetPlayerPosition")
+	db = SpeedyLoc.db.profile
 
 	local px, py
 	local MapID = GetBestMapForUnit("player")
@@ -163,7 +174,11 @@ function GetPlayerPosition()
 	end
 
 	if not px or px == 0 then
-		return text:format(100 * px, 100 * py)
+		if db.coords.hideZero then
+			return ""
+		else
+			return text:format(0, 0)
+		end
 	else
 		return text:format(100 * px, 100 * py)
 	end
@@ -172,38 +187,37 @@ end
 function GetFacing()
 	SpeedyLoc.prtD("GetFacing")
 
-	if IsInInstance() then return "" end
-
-	playerFacingRad = GetPlayerFacing()
-	playerFacingDeg = 360 - deg(playerFacingRad)
-	facing = 360 - deg(playerFacingRad)
-	facingShort = 1
-	if ((facing >= 337.5) or (facing < 22.5)) and (facingShort ~= 1) then SpeedyLoc.prtD("N")
-		facingShort = 1
-		return "|cffa0a0a0N"
-	elseif (facing >= 22.5) and (facing < 67.5) and (facingShort ~= 2) then SpeedyLoc.prtD("NE")
-		facingShort = 2
-		return "|cffa0a0a0NE"
-	elseif (facing >= 67.5) and (facing < 112.5) and (facingShort ~= 3) then SpeedyLoc.prtD("E")
-		facingShort = 3
-		return "|cffa0a0a0E"
-	elseif (facing >= 112.5) and (facing < 157.5) and (facingShort ~= 4) then SpeedyLoc.prtD("SE")
-		facingShort = 4
-		return "|cffa0a0a0SE"
-	elseif (facing >= 157.5) and (facing < 202.5) and (facingShort ~= 5) then SpeedyLoc.prtD("S")
-		facingShort = 5
-		return "|cffa0a0a0S"
-	elseif (facing >= 202.5) and (facing < 247.5) and (facingShort ~= 6) then SpeedyLoc.prtD("SW")
-		facingShort = 6
-		return "|cffa0a0a0SW"
-	elseif (facing >= 247.5) and (facing < 292.5) and (facingShort ~= 7) then SpeedyLoc.prtD("W")
-		facingShort = 7
-		return "|cffa0a0a0W"
-	elseif (facing >= 292.5) and (facing < 337.5) and (facingShort ~= 8) then SpeedyLoc.prtD("NW")
-		facingShort = 8
-		return "|cffa0a0a0NW"
-	else SpeedyLoc.prtD("N")
-		return "|cffa0a0a0N"
+	local plyrFacing = GetPlayerFacing()
+	if plyrFacing then
+		facing = 360 - deg(plyrFacing)
+		facingShort = 0
+		if ((facing >= 337.5) or (facing < 22.5)) and (facingShort ~= 1) then SpeedyLoc.prtD("N")
+			facingShort = 1
+			return "|cffa0a0a0N"
+		elseif (facing >= 22.5) and (facing < 67.5) and (facingShort ~= 2) then SpeedyLoc.prtD("NE")
+			facingShort = 2
+			return "|cffa0a0a0NE"
+		elseif (facing >= 67.5) and (facing < 112.5) and (facingShort ~= 3) then SpeedyLoc.prtD("E")
+			facingShort = 3
+			return "|cffa0a0a0E"
+		elseif (facing >= 112.5) and (facing < 157.5) and (facingShort ~= 4) then SpeedyLoc.prtD("SE")
+			facingShort = 4
+			return "|cffa0a0a0SE"
+		elseif (facing >= 157.5) and (facing < 202.5) and (facingShort ~= 5) then SpeedyLoc.prtD("S")
+			facingShort = 5
+			return "|cffa0a0a0S"
+		elseif (facing >= 202.5) and (facing < 247.5) and (facingShort ~= 6) then SpeedyLoc.prtD("SW")
+			facingShort = 6
+			return "|cffa0a0a0SW"
+		elseif (facing >= 247.5) and (facing < 292.5) and (facingShort ~= 7) then SpeedyLoc.prtD("W")
+			facingShort = 7
+			return "|cffa0a0a0W"
+		elseif (facing >= 292.5) and (facing < 337.5) and (facingShort ~= 8) then SpeedyLoc.prtD("NW")
+			facingShort = 8
+			return "|cffa0a0a0NW"
+		else SpeedyLoc.prtD("N")
+			return "|cffa0a0a0N"
+		end
 	end
 end
 
@@ -287,8 +301,8 @@ function SpeedyLoc:UpdateLayout()
 	self.frame:SetWidth(db.width)
 	self.frame:SetHeight(db.height)
 	self.frame:SetScale(db.scale)
-	self.frame:SetFrameStrata(db.strata)
 	self.frame:SetClampedToScreen(db.clamped)
+	self.frame:SetFrameStrata(db.strata)
 
 	local backdrop = self.frame:GetBackdrop()
 	backdrop.bgFile = Media and Media:Fetch(Media.MediaType.BACKGROUND, db.backgroundTexture)
