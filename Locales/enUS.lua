@@ -16,6 +16,8 @@ L["Layout Frame"] = true
 L["Bar"] = true
 L["Bar Lock"] = true
 L["Lock/unlock the layout frame."] = true
+L["Clamped To Screen"] = true
+L["Set whether the layout frame is restricted to the screen."] = true
 L["Bar Strata"] = true
 L["Set the strata level of the layout frame."] = true
 L["BACKGROUND"] = true
@@ -39,6 +41,7 @@ L["LEFT"] = true
 L["CENTER"] = true
 L["RIGHT"] = true
 
+L["Options"] = true
 L["Coordinates"] = true
 L["Bar Coords Font"] = true
 L["Set the bar coords font for the layout frame text."] = true
@@ -54,6 +57,8 @@ L["Coords X Offset"] = true
 L["Set the horizontal position of the coords text on the layout frame."] = true
 L["Coords Y Offset"] = true
 L["Set the vertical position of the coords text on the layout frame."] = true
+L["Coordinates Accuracy"] = true
+L["Control the accuracy of the coordinates."] = true
 
 L["Direction"] = true
 L["Bar Direction Font"] = true

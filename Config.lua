@@ -61,8 +61,7 @@ local function getOptions()
 							name = L["Bar"],
 							args = {
 								locked = {
-									order = 1,
-									type = "toggle",
+									order = 1, type = "toggle",
 									width = "full",
 									name = L["Bar Lock"],
 									desc = L["Lock/unlock the layout frame."],
@@ -71,8 +70,18 @@ local function getOptions()
 										SpeedyLoc:SetPosition(true)
 									end,
 								},
+								clamped = {
+									order = 2, type = "toggle",
+									width = "full",
+									name = L["Clamped To Screen"],
+									desc = L["Set whether the layout frame is restricted to the screen."],
+									set = function(info, v)
+										SpeedyLoc.db.profile.clamped = v
+										SpeedyLoc:UpdateLayout()
+									end,
+								},
 								strata = {
-									order = 2, type = "select", values = {
+									order = 3, type = "select", values = {
 																			BACKGROUND = L["BACKGROUND"],
 																			LOW = L["LOW"],
 																			MEDIUM = L["MEDIUM"],
@@ -90,7 +99,7 @@ local function getOptions()
 									end,
 								},
 								width = {
-									order = 3, type = "range", min = 10, max = 600, step = 1,
+									order = 4, type = "range", min = 10, max = 600, step = 1,
 									width = "full",
 									name = L["Width"],
 									desc = L["Adjust the width of the layout frame."],
@@ -100,7 +109,7 @@ local function getOptions()
 									end,
 								},
 								height = {
-									order = 4, type = "range", min = 10, max = 200, step = 1,
+									order = 5, type = "range", min = 10, max = 200, step = 1,
 									width = "full",
 									name = L["Height"],
 									desc = L["Adjust the height of the layout frame."],
@@ -110,7 +119,7 @@ local function getOptions()
 									end,
 								},
 								scale = {
-									order = 5, type = "range", min = 0.1, max = 2.0, step = 0.05,
+									order = 6, type = "range", min = 0.1, max = 2.0, step = 0.05,
 									width = "full",
 									name = L["Scale"],
 									desc = L["Adjust the scale of the layout frame."],
@@ -313,6 +322,21 @@ local function getOptions()
 									desc = L["Set the vertical position of the coords text on the layout frame."],
 									set = function(info, v)
 										SpeedyLoc.db.profile.coords.posy = v
+										SpeedyLoc:UpdateLayout()
+									end,
+								},
+							},
+						},
+						opts = {
+							name = L["Options"], type = "group", inline = true,
+							order = 3,
+							args = {
+								accuracy = {
+									order = 1, type = "range", min = 0, max = 2, step = 1,
+									name = L["Coordinates Accuracy"],
+									desc = L["Control the accuracy of the coordinates."],
+									set = function(info, v)
+										SpeedyLoc.db.profile.coords.accuracy = v
 										SpeedyLoc:UpdateLayout()
 									end,
 								},

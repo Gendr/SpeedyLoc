@@ -12,12 +12,12 @@
 ## Notes-zhCN: View current player coords, direction and movement speed.
 ## Notes-zhTW: View current player coords, direction and movement speed.
 ## Author: Gendr
-## Version: 1.0
+## Version: 1.1
 
 ## X-Category: Miscellaneous
 ## X-Website: https://github.com/Gendr/SpeedyLoc
 ## X-Curse-Project-ID: 317554
-## X-WoWI-ID: 
+## X-WoWI-ID: 24897
 
 ## SavedVariables: SpeedyLocDB
 ## OptionalDeps: Ace3, LibSharedMedia-3.0, AceGUI-3.0-SharedMediaWidgets

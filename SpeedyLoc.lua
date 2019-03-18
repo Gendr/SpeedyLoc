@@ -2,12 +2,15 @@
 
 local deg = math.deg
 local format = string.format
+local tonumber = tonumber
 
 ----------------------
 
 local AddMessage = AddMessage
 local DEFAULT_CHAT_FRAME = DEFAULT_CHAT_FRAME
+local GetBestMapForUnit = C_Map.GetBestMapForUnit
 local GetPlayerFacing = GetPlayerFacing
+local GetPlayerMapPosition = C_Map.GetPlayerMapPosition
 local GetUnitSpeed = GetUnitSpeed
 local IsFalling = IsFalling
 local UIParent = UIParent
@@ -20,16 +23,14 @@ local SpeedyLoc = LibStub("AceAddon-3.0"):NewAddon("SpeedyLoc")
 local L = LibStub("AceLocale-3.0"):GetLocale("SpeedyLoc")
 local Media = LibStub("LibSharedMedia-3.0")
 
-SpeedyLoc.VERSION = 1.0
+SpeedyLoc.VERSION = 1.1
 SpeedyLoc.DebugOn = false
 SpeedyLoc.Prefix = "|cffa0a0a0Speedy:"
-
-local GetPlayerMapPosition = C_Map.GetPlayerMapPosition
-local GetBestMapForUnit = C_Map.GetBestMapForUnit
 
 local facing, facingShort, facingText
 local playerFacingRad, playerFacingDeg
 local speed
+local texttemplate, text = "|cffa0a0a0%%.%df.%%.%df", "|cffa0a0a0%%.%df.%%.%df"
 
 ----------------------
 
@@ -40,6 +41,7 @@ local defaults = {
 		posX = 0,
 		posY = 0,
 		locked = false,
+		clamped = true,
 		strata = "HIGH",
 		width = 130,
 		height = 30,
@@ -69,6 +71,7 @@ local defaults = {
 			anchor = "LEFT",
 			posx = 7,
 			posy = 0,
+			accuracy = 0,
 		},
 		direction = {
 			font = "Friz Quadrata TT",
@@ -120,15 +123,11 @@ end
 function SpeedyLoc:OnEnable()
 	SpeedyLoc.prtD("OnEnable")
 
-	playerFacingRad = GetPlayerFacing()
-	playerFacingDeg = 360 - deg(playerFacingRad)
-
 	if (not self.frame) then
 		self:CreateBar()
 	end
 
 	self:UpdateLayout()
-
 end
 
 ----------------------
@@ -154,25 +153,26 @@ end
 ----------------------
 
 function GetPlayerPosition()
+	SpeedyLoc.prtD("GetPlayerPosition")
+
 	local px, py
 	local MapID = GetBestMapForUnit("player")
-	local xy = GetPlayerMapPosition(MapID, "player")
+	local xy = GetPlayerMapPosition(MapID or WorldMapFrame:GetID(), "player")
 	if xy then
 		px, py = xy:GetXY()
 	end
 
-	local t
 	if not px or px == 0 then
-		t = ""
-		return t
+		return text:format(100 * px, 100 * py)
 	else
-		t = format("|cffa0a0a0%.0f.%.0f", 100 * px, 100 * py)
-		return t
+		return text:format(100 * px, 100 * py)
 	end
 end
 
 function GetFacing()
 	SpeedyLoc.prtD("GetFacing")
+
+	if IsInInstance() then return "" end
 
 	playerFacingRad = GetPlayerFacing()
 	playerFacingDeg = 360 - deg(playerFacingRad)
@@ -288,6 +288,7 @@ function SpeedyLoc:UpdateLayout()
 	self.frame:SetHeight(db.height)
 	self.frame:SetScale(db.scale)
 	self.frame:SetFrameStrata(db.strata)
+	self.frame:SetClampedToScreen(db.clamped)
 
 	local backdrop = self.frame:GetBackdrop()
 	backdrop.bgFile = Media and Media:Fetch(Media.MediaType.BACKGROUND, db.backgroundTexture)
@@ -311,6 +312,9 @@ function SpeedyLoc:UpdateLayout()
 	self.frame.coordsTxt:SetShadowOffset(0, 0)
 	self.frame.coordsTxt:SetShadowOffset(coordsFontShadow, -coordsFontShadow)
 	self.frame.coordsTxt:SetPoint(db.coords.anchor, self.frame, db.coords.posx, db.coords.posy)
+
+	local acc = tonumber(db.coords.accuracy) or 1
+	text = texttemplate:format(acc, acc)
 
 	local dirFont = Media and Media:Fetch(Media.MediaType.FONT, db.direction.font) or "Fonts\\FRIZQT__.ttf"
 	local dirFontSize = db.direction.fontSize
